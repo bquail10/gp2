@@ -12,7 +12,6 @@ CGameApplication::~CGameApplication(void)
 {
 	if(m_pD3D10Device)
 		m_pD3D10Device->ClearState();
-	
 	if(m_pRenderTargetView)
 		m_pRenderTargetView->Release();
 	if(m_pSwapChain)
@@ -46,7 +45,6 @@ CGameApplication::~CGameApplication(void)
 					update();
 					render();
 				}
-				
 			}
 			return false;
 		}
@@ -137,7 +135,8 @@ CGameApplication::~CGameApplication(void)
 		{
 			m_pWindow=new CWin32Window();
 			if(!m_pWindow->init(TEXT("Lab 1 - Create Device"),800,640,false))
-				return false;
+			
+			return false;
 
 			return true;
 		}
