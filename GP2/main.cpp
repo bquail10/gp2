@@ -3,7 +3,6 @@
 //if so include the header for windows applications
 #include <Windows.h>
 #endif
-
 #include "GameApplication.h"
 
 //Check to see if we are on windows
@@ -14,20 +13,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 int main(int argc, char **argv)
 #endif
 {
-	CGameApplication * pApp=new CGameApplication();
+	CGameApplication * pApp=new CGameApplication(); //entry point of the application allocates a pointer to the Game Application class
 	
-	if(!pApp->init())
+	if(!pApp->init()) //checking to see if the pointer is not initialized
 	{
-		if(pApp)
+		if(pApp) //will delete the pointer if it is not initialized
 		{
 			delete pApp;
 			pApp=NULL;
 			return 1;
 		}
 	}
-	pApp->run();
+	pApp->run(); //will run if the pointer is initialized
 	
-	if(pApp)
+	if(pApp) // deletes the pointer
 	{
 		delete pApp;
 		pApp=NULL;
