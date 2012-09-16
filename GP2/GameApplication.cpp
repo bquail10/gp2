@@ -209,7 +209,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 
 			UINT numElements = sizeof( layout )/sizeof(D3D10_INPUT_ELEMENT_DESC);
 			D3D10_PASS_DESC PassDesc;
-			m_pTechnique->GetPassByIndex(0)->GetDesc( &PassDesc);
+			m_pTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
 
 			m_pD3D10Device->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

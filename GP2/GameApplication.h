@@ -23,9 +23,9 @@ private:
 		ID3D10Device * m_pD3D10Device; //variable used to render scene
 		IDXGISwapChain * m_pSwapChain; //variable used to render scene
 		ID3D10RenderTargetView * m_pRenderTargetView; //variable used to render scene
-		CWin32Window * m_pWindow;
-		ID3D10Buffer* m_pVertexBuffer;
-		ID3D10InputLayout*	m_pVertexLayout;
-		ID3D10Effect* m_pEffect;
-		ID3D10EffectTechnique* m_pTechnique;
+		CWin32Window * m_pWindow; //variable for showing window
+		ID3D10Buffer* m_pVertexBuffer; //
+		ID3D10InputLayout*	m_pVertexLayout; //
+		ID3D10Effect* m_pEffect; //
+		ID3D10EffectTechnique* m_pTechnique; //
 };
