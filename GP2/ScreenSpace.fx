@@ -12,7 +12,7 @@ technique10 Render
 {
 	pass P0
 	{
-		SetVertextSHader( CompileShader( vs_4_0, VS()));
+		SetVertexShader( CompileShader( vs_4_0, VS()));
 		SetGeometryShader(NULL);
 		SetPixelShader( CompileShader(ps_4_0, PS()));
 	}

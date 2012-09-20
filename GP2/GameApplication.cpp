@@ -139,9 +139,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 				return false;
 			
 			ID3D10Texture2D *pBackBuffer;
-			if(FAILED(m_pSwapChain->GetBuffer(0,
-					__uuidof(ID3D10Texture2D),
-					(void**)&pBackBuffer)));
+			if(FAILED(m_pSwapChain->GetBuffer(0,_uuidof(ID3D10Texture2D),(void**)&pBackBuffer)));
 			return false;
 
 			if(FAILED(m_pD3D10Device->CreateRenderTargetView( pBackBuffer,
