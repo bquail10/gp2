@@ -47,8 +47,10 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 		{
 			if(!initWindow())
 				return false;
+
 			if(!initGraphics())
 				return false;
+			
 			if(!initGame())
 				return false;
 
@@ -195,8 +197,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			D3D10_SUBRESOURCE_DATA InitData;
 			InitData.pSysMem = vertices;
 
-			if(FAILED(m_pD3D10Device ->CreateBuffer( &bd, &InitData,
-				&m_pVertexBuffer )))
+			if(FAILED(m_pD3D10Device ->CreateBuffer( &bd, &InitData,&m_pVertexBuffer )))
 				return false;
 
 			D3D10_INPUT_ELEMENT_DESC layout[] =
@@ -211,7 +212,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			D3D10_PASS_DESC PassDesc;
 			m_pTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
 
-			m_pD3D10Device->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			
 
 			if(FAILED(m_pD3D10Device->CreateInputLayout( layout,
 				numElements,
@@ -247,7 +248,9 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			}
 
 			m_pTechnique=m_pEffect->GetTechniqueByName("Render");
-
+			
+			m_pD3D10Device->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			
 			return true;
 		}
 
