@@ -104,40 +104,57 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			createDeviceFlags|=D3D10_CREATE_DEVICE_DEBUG; //checks to see if there is a Preprocessoer flag enabled in the build
 #endif													  //checks if the development enviroment is in debug
 			
-			DXGI_SWAP_CHAIN_DESC sd; //initialize variable of type DXGI_SWAP_CHAIN_DESC, holds all options for the craetion of the swap chain
-			ZeroMemory( &sd, sizeof( sd )); //ZeroMemory is a function takes in memory address and size of a variable and initailizes all values too 0 
-			
-			if(m_pWindow->isFullScreen()) //checks if the window is fullscreen
-				sd.BufferCount = 2; //we specify 2 buffers(front, back)
-			else
-				sd.BufferCount = 1; //if not full screen then just 1 buffer and the desktop used as front buffer
+		//Initialise the swap chain description by setting all its values to zero - BMD
+	DXGI_SWAP_CHAIN_DESC sd;
+	//http://msdn.microsoft.com/en-us/library/aa366920%28v=vs.85%29.aspx - BMD
+    ZeroMemory( &sd, sizeof( sd ) );
+	//What kind of surface is contained in the swap chain, in this case something we draw too
+	//http://msdn.microsoft.com/en-us/library/bb173078%28v=vs.85%29.aspx - BMD
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	//Number of buffers, if we are not full screen this will be one as the desktop
+	//acts as a front buffer. If we are in full screen this will be one - BMD
+	if (m_pWindow->isFullScreen())
+		sd.BufferCount = 2;
+	else 
+		sd.BufferCount=1;
+	//The handle of the window which this swap chain is linked to, this must not be NULL - BMD
+	sd.OutputWindow = m_pWindow->getHandleToWindow();
+	//Are we in windowed mode, arggh opposite of full screen
+	sd.Windowed = (BOOL)(!m_pWindow->isFullScreen());
+	//Multisampling(antialsing) parameters for the swap chain - this has performance considerations - see remarks in docs
+	//http://msdn.microsoft.com/en-us/library/bb173072%28v=vs.85%29.aspx - BMD
+    sd.SampleDesc.Count = 1;
+    sd.SampleDesc.Quality = 0;
+	//The description of the swap chain buffer
+	//http://msdn.microsoft.com/en-us/library/bb173064%28v=vs.85%29.aspx - BMD
+	//width & height of the buffer - this matches the size of the window - BMD
+    sd.BufferDesc.Width = width;
+    sd.BufferDesc.Height = height;
+	//The data format of the buffer in the swap chain, 8bits used for Red, green, blue & alpha - unsigned int(UNIFORM) - BMD
+	//http://msdn.microsoft.com/en-us/library/bb173059%28v=vs.85%29.aspx
+    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//Refresh rate of the buffer in the swap chain - BMD
+    sd.BufferDesc.RefreshRate.Numerator = 60;
+    sd.BufferDesc.RefreshRate.Denominator = 1;
+	
+	//NB. You should get use to seeing patterns like this when programming with D3D10 
+	//where we use a description object which is then used in the creation of a D3D10 resource 
+	//like swap chains. Also in a real application we would check to see if some of the above
+	//options are support by the graphics hardware. -BMD
 
-			sd.OutputWindow = m_pWindow->getHandleToWindow(); //associates a window handle with the swap chain desc
-			sd.Windowed = (BOOL)(!m_pWindow->isFullScreen()); //this converts from boolean to a BOOL if in window mode, we use not to say if windowed or not
-			sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //says the buffer used as a render target(something to draw to)
+	//Create D3D10 Device and swap chain 
+	//http://msdn.microsoft.com/en-us/library/bb205087%28v=vs.85%29.aspx - BMD
+	if (FAILED(D3D10CreateDeviceAndSwapChain(NULL, //Pointer to IDXGIAdpater, this is a display adapater on the machine this can be NULL - BMD
+		D3D10_DRIVER_TYPE_HARDWARE,//Type of Driver we have, it can be a hardware device, refrence(slow) or Software(not supported yet) - BMD
+		NULL, //Handle to a module that implements a software rasterizer - BMD
+		createDeviceFlags,//The device creation flags we used earlier on - BMD
+		D3D10_SDK_VERSION,//The version of the SDK we are using this should D3D10 - BMD
+		&sd,//The memory address of the swap chain description - BMD
+		&m_pSwapChain, //The memory address of the swap chain pointer, if all goes well this will be intialised after this function call - BMD
+		&m_pD3D10Device)))//the memory address of the D3D10 Device, if all goes well this will be initialised after this function call - BMD
+		return false;
 
-			sd.SampleDesc.Count = 1; //sets multisampling(     ) parameters for the swap chain
-			sd.SampleDesc.Quality = 0; // it is turned off because it will have some preformance considerations
 
-			//this code sets options for underlying buffer
-			sd.BufferDesc.Width = width; //width of the buffer
-			sd.BufferDesc.Height = height; //height of the buffer
-			sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //sets format of the buffer has 8bytes for each component(red, green, blue, alpha)
-			sd.BufferDesc.RefreshRate.Numerator = 60; //sets the refresh rate of 60Hz
-			sd.BufferDesc.RefreshRate.Denominator = 1; //using an update on the vertical blank
-
-			//function that creates the swap chain  and the device in one call
-			//it has an if and FAILED to check if the function is failed
-			if(FAILED(D3D10CreateDeviceAndSwapChain(NULL, //a pointer to IDXGIAdapter(analogous to a physical graphics card) NULL uses default adapter
-				D3D10_DRIVER_TYPE_HARDWARE, //the type of driver flag, D3D10_DRIVER_TYPE_HARDWARE is a hardware device
-				NULL, //a handle to a module(dynamic link library) which contains software inplementation of D3D10, will be NULL most of the time
-				createDeviceFlags, //this is optional, its used to give additioanl options when we craete a device, this flag used to put into debug
-				D3D10_SDK_VERSION, //this is the version of D3D10 we are working with, will always be D3D10_SDK_VERSION
-				&sd, //a pointer for the swap chain desc, uses memory address operator(&) to get pointer
-				&m_pSwapChain, //an address of a pointer to swap chain interface, initializes our IDXFGISwapCahin pointer
-				&m_pD3D10Device))) //an address of a pointer to D3D10Device, initializes our D3D10Device pointer
-				return false;
-			
 			ID3D10Texture2D *pBackBuffer;
 			if(FAILED(m_pSwapChain->GetBuffer(0,
 				__uuidof(ID3D10Texture2D),
