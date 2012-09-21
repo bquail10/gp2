@@ -255,26 +255,32 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 				return false;
 			}
 
-			m_pTechnique=m_pEffect->GetTechniqueByName("Render");
-			D3D10_BUFFER_DESC bd;
-			bd.Usage = D3D10_USAGE_DEFAULT;
-			bd.ByteWidth = sizeof( Vertex ) * 3;
-			bd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
-			bd.CPUAccessFlags = 0;
-			bd.MiscFlags = 0;
+			m_pTechnique=m_pEffect->GetTechniqueByName("Render"); 
+
+			D3D10_BUFFER_DESC bd; //this is the buffer description structure
+			bd.Usage = D3D10_USAGE_DEFAULT; //this is how buffer is read/written to, DEFAULT states that the resoures read/written by the gpu
+			bd.ByteWidth = sizeof( Vertex ) * 3; //this isthe size of the buffer, in this case it hold 3 vertices
+			bd.BindFlags = D3D10_BIND_VERTEX_BUFFER; //this is the type of buffer we are creating
+			bd.CPUAccessFlags = 0; //this is to specify that the buffer can be read/written by the CPU
+			bd.MiscFlags = 0; //this is used for an additional options, 0 mean no additional options
 			
 			Vertex vertices[] =
 			{
-				D3DXVECTOR3( 0.0f, 0.5f, 0.5f), // position of the first vertice
-				D3DXVECTOR3( 0.5f, -0.5f, 0.5f), // position of the second vertice
-				D3DXVECTOR3( -0.5f, -0.5f, 0.5f), // position of the third vertice
+				D3DXVECTOR3( 0.0f, 0.5f, 0.5f), //position of the first vertice
+				D3DXVECTOR3( 0.5f, -0.5f, 0.5f), //position of the second vertice
+				D3DXVECTOR3( -0.5f, -0.5f, 0.5f), //position of the third vertice
 			};
 
-			D3D10_SUBRESOURCE_DATA InitData;
-			InitData.pSysMem = vertices;
+			D3D10_SUBRESOURCE_DATA InitData; //this initailizes D3D10_SUBRESOURCE_DATA structure
+			InitData.pSysMem = vertices; //this makes pSysMem equal 
 
-			if(FAILED(m_pD3D10Device ->CreateBuffer(&bd, &InitData,&m_pVertexBuffer)))
+			if(FAILED(m_pD3D10Device ->CreateBuffer( //function
+				&bd, //this is a pointer to a buffer description 
+				&InitData, //this is a pointer to a buffer
+				&m_pVertexBuffer))) //this is a memory address of a pointer to a buffer
+			{
 				return false;
+			}
 
 			D3D10_INPUT_ELEMENT_DESC layout[] =
 			{
