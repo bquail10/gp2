@@ -41,8 +41,8 @@ private:
 		ID3D10Buffer* m_pVertexBuffer; //variable
 		ID3D10InputLayout*	m_pVertexLayout; //variable
 		
-		ID3D10Effect* m_pEffect; //
-		ID3D10EffectTechnique* m_pTechnique; //
+		ID3D10Effect* m_pEffect; //vaiable holds the effect file, allowing us to communicate with the loaded effect
+		ID3D10EffectTechnique* m_pTechnique; //this is used in the rendering process and will be retieved from the effect varaiable
 
 		ID3D10EffectMatrixVariable* m_pWorldMatrixVariable;
 

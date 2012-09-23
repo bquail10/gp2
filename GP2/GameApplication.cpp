@@ -239,23 +239,27 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 
 		bool CGameApplication::initGame() //The function creates the objects for the game include textures, effects and 3D models
 		{
-			DWORD dwShaderFlags =  D3D10_SHADER_ENABLE_STRICTNESS;
+			DWORD dwShaderFlags =  D3D10_SHADER_ENABLE_STRICTNESS; //this puts our effect loading in debug, will genereate more info if needing to debug shader
 #if defined(DEBUG)|| defined(_DEBUG)
 			dwShaderFlags |= D3D10_SHADER_DEBUG;
 #endif
 
-			if(FAILED(D3DX10CreateEffectFromFile( TEXT("Transform.fx"),
-				NULL,NULL, "fx_4_0", dwShaderFlags, 0,
-				m_pD3D10Device, NULL, NULL, &m_pEffect,
+			if(FAILED(D3DX10CreateEffectFromFile //this function will load the effect file
+				(TEXT("Transform.fx"), //this is the name of the file of the efffect 
+				NULL,NULL, "fx_4_0", //"fx_4_0" is the shader profile we are using, this is equivalent of shader model 4 
+				dwShaderFlags, 0, //dwShaderFlags this allows us to collect debug info about the shader
+				m_pD3D10Device, //this is a pointer to a valid device which will use this effect 
+				NULL, NULL, 
+				&m_pEffect, //this is a pointer to the memory address of an effect object
 				NULL, NULL )))
 			{
-				MessageBox( NULL, TEXT("The FX file cannot be located. Please run this executable from the derectory that contains the FX file."),
+				MessageBox( NULL, TEXT("The FX file cannot be located. Please run this executable from the derectory that contains the FX file."), //this displays if we don't have a valid pointer
 					TEXT("Error"),
 					MB_OK);
 				return false;
 			}
 
-			m_pTechnique=m_pEffect->GetTechniqueByName("Render"); 
+			m_pTechnique=m_pEffect->GetTechniqueByName("Render");  //this calls GetTechniqueByName and passes in a string which we are looking for in the effect
 
 			D3D10_BUFFER_DESC bd; //this is the buffer description structure
 			bd.Usage = D3D10_USAGE_DEFAULT; //this is how buffer is read/written to, DEFAULT states that the resoures read/written by the gpu
