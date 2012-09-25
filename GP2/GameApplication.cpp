@@ -88,12 +88,12 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 
 			m_pWorldMatrixVariable->SetMatrix((float*)m_matWorld);
 
-			D3D10_TECHNIQUE_DESC techDesc;
-			m_pTechnique->GetDesc( &techDesc);
-			for(UINT p = 0; p <techDesc.Passes; ++p)
+			D3D10_TECHNIQUE_DESC techDesc; //this retrieves a description of the technique
+			m_pTechnique->GetDesc( &techDesc); //this will allow us info about it such as number of passed contained in the technique
+			for(UINT p = 0; p <techDesc.Passes; ++p) //this is a loopthat retrieves the pass we are currently on
 			{
-				m_pTechnique->GetPassByIndex(p)->Apply(0);
-				m_pD3D10Device->Draw(3,0);
+				m_pTechnique->GetPassByIndex(p)->Apply(0); //this will apply all the parameters of the pass such as render states and shader states
+				m_pD3D10Device->Draw(3,0); //the draw has 2 parameter, the 1st is the number of vertice3s we want to draw, 2nd is the start location in the buffer
 			}
 
 			m_pSwapChain->Present(0, 0); //it flips the swap chain, so it goes from the back buffer to the front buffer and the rendered scene will appear
@@ -286,35 +286,44 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 				return false;
 			}
 
-			D3D10_INPUT_ELEMENT_DESC layout[] =
+			D3D10_INPUT_ELEMENT_DESC layout[] = //this is an array
 			{
 				{
-					"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
+						"POSITION", //this is a string which specifies the smantic that this element is bound too
+						0, //this is the index of the semantic, it is used to bind to a vertex
+						DXGI_FORMAT_R32G32B32_FLOAT, //This is the format of the data, there are 3 components with 32 bits for each of them
+						0, 
+						0, //this is the starting offset of the element, it will increase for subsequent elements in the array
 						D3D10_INPUT_PER_VERTEX_DATA, 0
 				}
 			};
 
-			UINT numElements = sizeof( layout )/sizeof(D3D10_INPUT_ELEMENT_DESC);
-			D3D10_PASS_DESC PassDesc;
-			m_pTechnique->GetPassByIndex(0)->GetDesc(&PassDesc);
+			UINT numElements = sizeof( layout )/sizeof(D3D10_INPUT_ELEMENT_DESC); //this calculates and then numbers elements in the input array
+			D3D10_PASS_DESC PassDesc; //this retrieves the pass description from the technique
+			m_pTechnique->GetPassByIndex(0)->GetDesc(&PassDesc); //this is needed because we need to bind the layout of the vertex to a vertex contained in effect 
 
-			if(FAILED(m_pD3D10Device->CreateInputLayout( layout,
-				numElements,
-				PassDesc.pIAInputSignature,
-				PassDesc.IAInputSignatureSize,
-				&m_pVertexLayout)))
+			if(FAILED(m_pD3D10Device->CreateInputLayout( //CreateInputLayout will create our input layout
+				layout, //this is an array of input element descriptions
+				numElements, //this is the number elements in the input elements array
+				PassDesc.pIAInputSignature, //this is a pointer to the compiled shader code, this is retrieved from pass using input signature variable of the pass description
+				PassDesc.IAInputSignatureSize, //this is the size of the shader code, this is retrieved from the pass description
+				&m_pVertexLayout))) //this is a pointer to a memory address of the input layout object
 			{
 				return false;
 			}
 
-			m_pD3D10Device->IASetInputLayout(m_pVertexLayout);
+			m_pD3D10Device->IASetInputLayout(m_pVertexLayout); //this tells the input assembler(IA) of the input layout
 
-			UINT stride = sizeof(Vertex);
-			UINT offset = 0;
-			m_pD3D10Device->IASetVertexBuffers( 0, 1,
-								&m_pVertexBuffer, &stride, &offset );
+			UINT stride = sizeof(Vertex); //this assigns a value to hold stride(size) of a vertex
+			UINT offset = 0; //this is a vlue to hold the offset which is where vertices start in the vertex buffer
+			m_pD3D10Device->IASetVertexBuffers( //this function will be used to bind one or many buffers to the IA to use
+				0, //this is the input slot to bind, 0 indicates the first slot, we can as bind a buffer to other slots so we can change buffer as we render 
+				1, //this is the amount of buffer we are binding
+				&m_pVertexBuffer, //this a pointer to the memory address of the buffer
+				&stride, //this is an array of the strides
+				&offset ); //this is an array of the offsets.
 			
-			m_pD3D10Device->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			m_pD3D10Device->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //this tells the IA what type of primitive we are going to draw with
 			
 			D3DXVECTOR3 cameraPos(0.0f,0.0,-10.0f);
 			D3DXVECTOR3 cameraLook(0.0f,0.0f,1.0f);
