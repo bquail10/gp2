@@ -23,6 +23,8 @@ private:
 		ID3D10Device * m_pD3D10Device; //variable used to render scene
 		IDXGISwapChain * m_pSwapChain; //variable used to render scene
 		ID3D10RenderTargetView * m_pRenderTargetView; //variable used to render scene
+
+		
 		
 		ID3D10DepthStencilView*m_pDepthStencilView;
 		ID3D10Texture2D * m_pDepthStencilTexture;
@@ -40,7 +42,8 @@ private:
 		
 		ID3D10Buffer* m_pVertexBuffer; //variable
 		ID3D10InputLayout*	m_pVertexLayout; //variable
-		
+		ID3D10Buffer* m_pIndexBuffer; //variable
+
 		ID3D10Effect* m_pEffect; //vaiable holds the effect file, allowing us to communicate with the loaded effect
 		ID3D10EffectTechnique* m_pTechnique; //this is used in the rendering process and will be retieved from the effect varaiable
 

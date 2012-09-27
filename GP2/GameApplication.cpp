@@ -12,8 +12,9 @@ CGameApplication::CGameApplication(void) //class constructor called for creating
 	m_pRenderTargetView=NULL;
 	m_pSwapChain=NULL;
 	m_pVertexBuffer=NULL;
+	m_pIndexBuffer=NULL;
 	m_pDepthStencilView=NULL;
-	m_pDepthStencilTexture=NULL;
+	m_pDepthStencilTexture=NULL;	
 }
 
 CGameApplication::~CGameApplication(void) //deconstructor deallocate all resources, D3D10 objects we call the release function
@@ -44,6 +45,9 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 	
 	if(m_pD3D10Device)
 		m_pD3D10Device->Release();
+
+	if(m_pIndexBuffer)
+		m_pIndexBuffer->Release();
 
 	if(m_pWindow) //deletes the window
 	{
@@ -93,7 +97,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			for(UINT p = 0; p <techDesc.Passes; ++p) //this is a loopthat retrieves the pass we are currently on
 			{
 				m_pTechnique->GetPassByIndex(p)->Apply(0); //this will apply all the parameters of the pass such as render states and shader states
-				m_pD3D10Device->Draw(3,0); //the draw has 2 parameter, the 1st is the number of vertice3s we want to draw, 2nd is the start location in the buffer
+				m_pD3D10Device->DrawIndexed(36,0,0); //the draw has 2 parameter, the 1st is the number of vertice3s we want to draw, 2nd is the start location in the buffer
 			}
 
 			m_pSwapChain->Present(0, 0); //it flips the swap chain, so it goes from the back buffer to the front buffer and the rendered scene will appear
@@ -270,22 +274,56 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			
 			Vertex vertices[] =
 			{
-				D3DXVECTOR3( 0.0f, 0.5f, 0.5f), //position of the first vertice
-				D3DXVECTOR3( 0.5f, -0.5f, 0.5f), //position of the second vertice
-				D3DXVECTOR3( -0.5f, -0.5f, 0.5f), //position of the third vertice
+				
+				D3DXVECTOR3( 0.0f, 0.0f, 0.0f), //position of the first vertice
+				D3DXVECTOR3( 0.5f, 0.0f, 0.0f), //position of the second vertice
+				D3DXVECTOR3( 0.0f, 0.5f, 0.0f), //position of the third vertice
+				D3DXVECTOR3( 0.5f, 0.5f, 0.0f), //position of the fourth vertice
+				D3DXVECTOR3( 0.0f, 0.0f, 0.5f), //position of the first vertice
+				D3DXVECTOR3( 0.5f, 0.0f, 0.5f), //position of the second vertice
+				D3DXVECTOR3( 0.0f, 0.5f, 0.5f), //position of the third vertice
+				D3DXVECTOR3( 0.5f, 0.5f, 0.5f), //position of the fourth vertice
 			};
 
 			D3D10_SUBRESOURCE_DATA InitData; //this initailizes D3D10_SUBRESOURCE_DATA structure
 			InitData.pSysMem = vertices; //this makes pSysMem equal 
 
-			if(FAILED(m_pD3D10Device ->CreateBuffer( //function
+			if(FAILED(m_pD3D10Device ->CreateBuffer( //function, creates vertex buffer
 				&bd, //this is a pointer to a buffer description 
 				&InitData, //this is a pointer to a buffer
 				&m_pVertexBuffer))) //this is a memory address of a pointer to a buffer
 			{
 				return false;
 			}
+			
+			int indices[] = {0,1,2,0,1,3,3,1,5,5,7,3,0,2,4,4,6,2,0,1,4,4,5,1,2,3,6,6,7,3,6,4,5,6,7,5};
 
+			D3D10_BUFFER_DESC bdesc; //this is the buffer description structure
+			bdesc.Usage = D3D10_USAGE_DEFAULT; //this is how buffer is read/written to, DEFAULT states that the resoures read/written by the gpu
+			bdesc.ByteWidth = sizeof(indices) * 36; //this is the size of the buffer
+			bdesc.BindFlags = D3D10_BIND_INDEX_BUFFER; //this is the type of buffer we are creating
+			bdesc.CPUAccessFlags = 0; //this is to specify that the buffer can be read/written by the CPU
+			bdesc.MiscFlags = 0; //this is used for an additional options, 0 mean no additional options
+			
+			
+			
+			D3D10_SUBRESOURCE_DATA indexBufferInitialData;
+			indexBufferInitialData.pSysMem = indices;
+
+			if(FAILED(m_pD3D10Device->CreateBuffer(
+				&bdesc,
+				&indexBufferInitialData,
+				&m_pIndexBuffer)))
+			{
+				return false;
+			}
+
+			m_pD3D10Device->IASetIndexBuffer( //this function will be used to bind one or many buffers to the IA to use
+				m_pIndexBuffer, //this is the input slot to bind, 0 indicates the first slot, we can as bind a buffer to other slots so we can change buffer as we render 
+				DXGI_FORMAT_R32_UINT, //this is the amount of buffer we are binding
+				0); //this is an array of the offsets.
+			
+			
 			D3D10_INPUT_ELEMENT_DESC layout[] = //this is an array
 			{
 				{
