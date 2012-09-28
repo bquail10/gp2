@@ -275,14 +275,14 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			Vertex vertices[] =
 			{
 				
-				D3DXVECTOR3( 0.0f, 0.0f, 0.0f), //position of the first vertice
+				//D3DXVECTOR3( 0.0f, 0.0f, 0.0f), //position of the first vertice
 				D3DXVECTOR3( 0.5f, 0.0f, 0.0f), //position of the second vertice
 				D3DXVECTOR3( 0.0f, 0.5f, 0.0f), //position of the third vertice
 				D3DXVECTOR3( 0.5f, 0.5f, 0.0f), //position of the fourth vertice
-				D3DXVECTOR3( 0.0f, 0.0f, 0.5f), //position of the first vertice
-				D3DXVECTOR3( 0.5f, 0.0f, 0.5f), //position of the second vertice
-				D3DXVECTOR3( 0.0f, 0.5f, 0.5f), //position of the third vertice
-				D3DXVECTOR3( 0.5f, 0.5f, 0.5f), //position of the fourth vertice
+				D3DXVECTOR3( 0.0f, 0.0f, 0.5f), //position of the fifth vertice
+				D3DXVECTOR3( 0.5f, 0.0f, 0.5f), //position of the sixth vertice
+				D3DXVECTOR3( 0.0f, 0.5f, 0.5f), //position of the seventh vertice
+				D3DXVECTOR3( 0.5f, 0.5f, 0.5f), //position of the eighth vertice
 			};
 
 			D3D10_SUBRESOURCE_DATA InitData; //this initailizes D3D10_SUBRESOURCE_DATA structure
