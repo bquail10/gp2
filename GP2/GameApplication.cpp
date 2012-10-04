@@ -3,6 +3,8 @@
 struct Vertex
 {
 	D3DXVECTOR3 Pos;
+	D3DXCOLOR colour;
+
 };
 
 CGameApplication::CGameApplication(void) //class constructor called for creating instance of a class
@@ -265,6 +267,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 
 			m_pTechnique=m_pEffect->GetTechniqueByName("Render");  //this calls GetTechniqueByName and passes in a string which we are looking for in the effect
 
+		
 			D3D10_BUFFER_DESC bd; //this is the buffer description structure
 			bd.Usage = D3D10_USAGE_DEFAULT; //this is how buffer is read/written to, DEFAULT states that the resoures read/written by the gpu
 			bd.ByteWidth = sizeof( Vertex ) * 8; //this isthe size of the buffer, in this case it hold 3 vertices
@@ -275,14 +278,15 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			Vertex vertices[] =
 			{
 				
-				D3DXVECTOR3( 0.0f, 0.0f, 0.0f), //position of the first vertice
-				D3DXVECTOR3( 0.5f, 0.0f, 0.0f), //position of the second vertice
-				D3DXVECTOR3( 0.0f, 0.5f, 0.0f), //position of the third vertice
-				D3DXVECTOR3( 0.5f, 0.5f, 0.0f), //position of the fourth vertice
-				D3DXVECTOR3( 0.0f, 0.0f, 0.5f), //position of the fifth vertice
-				D3DXVECTOR3( 0.5f, 0.0f, 0.5f), //position of the sixth vertice
-				D3DXVECTOR3( 0.0f, 0.5f, 0.5f), //position of the seventh vertice
-				D3DXVECTOR3( 0.5f, 0.5f, 0.5f), //position of the eighth vertice
+				{D3DXVECTOR3( 0.0f, 0.0f, 0.0f),D3DXCOLOR(1.0f,0.6f,1.0f,1.0f)}, //position and colour of the first vertice
+				{D3DXVECTOR3( 0.5f, 0.0f, 0.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)}, //position and colour of the second vertice
+				{D3DXVECTOR3( 0.0f, 0.5f, 0.0f),D3DXCOLOR(0.3f,1.0f,0.5f,1.0f)}, //position and colour of the third vertice
+				{D3DXVECTOR3( 0.5f, 0.5f, 0.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)}, //position and colour of the fourth vertice
+				{D3DXVECTOR3( 0.5f, 0.5f, 0.0f),D3DXCOLOR(0.7f,1.0f,1.0f,1.0f)}, //position and colour of the fourth vertice
+				{D3DXVECTOR3( 0.0f, 0.0f, 0.5f),D3DXCOLOR(1.0f,1.0f,0.4f,1.0f)}, //position and colour of the fifth vertice
+				{D3DXVECTOR3( 0.5f, 0.0f, 0.5f),D3DXCOLOR(1.0f,0.6f,1.0f,1.0f)}, //position and colour of the sixth vertice
+				{D3DXVECTOR3( 0.0f, 0.5f, 0.5f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)}, //position and colour of the seventh vertice
+				{D3DXVECTOR3( 0.5f, 0.5f, 0.5f),D3DXCOLOR(1.0f,0.0f,0.0f,1.0f)}, //position and colour of the eighth vertice
 			};
 
 			D3D10_SUBRESOURCE_DATA InitData; //this initailizes D3D10_SUBRESOURCE_DATA structure
@@ -324,13 +328,21 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			
 			D3D10_INPUT_ELEMENT_DESC layout[] = //this is an array
 			{
-				{
-						"POSITION", //this is a string which specifies the smantic that this element is bound too
+				{		"POSITION", //this is a string which specifies the smantic that this element is bound too
 						0, //this is the index of the semantic, it is used to bind to a vertex
 						DXGI_FORMAT_R32G32B32_FLOAT, //This is the format of the data, there are 3 components with 32 bits for each of them
 						0, 
 						0, //this is the starting offset of the element, it will increase for subsequent elements in the array
 						D3D10_INPUT_PER_VERTEX_DATA, 0
+				},
+				
+				{
+						"COLOR", //this is a string which specifies the smantic that this element is bound too
+						0, //this is the index of the semantic, it is used to bind to a vertex
+						DXGI_FORMAT_R32G32B32A32_FLOAT, //This is the format of the data, there are 3 components with 32 bits for each of them
+						0, 
+						12, //this is the starting offset of the element, it will increase for subsequent elements in the array
+						D3D10_INPUT_PER_VERTEX_DATA, 0		
 				}
 			};
 
