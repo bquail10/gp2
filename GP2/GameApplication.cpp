@@ -267,7 +267,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 
 			D3D10_BUFFER_DESC bd; //this is the buffer description structure
 			bd.Usage = D3D10_USAGE_DEFAULT; //this is how buffer is read/written to, DEFAULT states that the resoures read/written by the gpu
-			bd.ByteWidth = sizeof( Vertex ) * 3; //this isthe size of the buffer, in this case it hold 3 vertices
+			bd.ByteWidth = sizeof( Vertex ) * 8; //this isthe size of the buffer, in this case it hold 3 vertices
 			bd.BindFlags = D3D10_BIND_VERTEX_BUFFER; //this is the type of buffer we are creating
 			bd.CPUAccessFlags = 0; //this is to specify that the buffer can be read/written by the CPU
 			bd.MiscFlags = 0; //this is used for an additional options, 0 mean no additional options
@@ -275,7 +275,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			Vertex vertices[] =
 			{
 				
-				//D3DXVECTOR3( 0.0f, 0.0f, 0.0f), //position of the first vertice
+				D3DXVECTOR3( 0.0f, 0.0f, 0.0f), //position of the first vertice
 				D3DXVECTOR3( 0.5f, 0.0f, 0.0f), //position of the second vertice
 				D3DXVECTOR3( 0.0f, 0.5f, 0.0f), //position of the third vertice
 				D3DXVECTOR3( 0.5f, 0.5f, 0.0f), //position of the fourth vertice
@@ -300,12 +300,10 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 
 			D3D10_BUFFER_DESC bdesc; //this is the buffer description structure
 			bdesc.Usage = D3D10_USAGE_DEFAULT; //this is how buffer is read/written to, DEFAULT states that the resoures read/written by the gpu
-			bdesc.ByteWidth = sizeof(indices) * 36; //this is the size of the buffer
+			bdesc.ByteWidth = sizeof(int) * 36; //this is the size of the buffer
 			bdesc.BindFlags = D3D10_BIND_INDEX_BUFFER; //this is the type of buffer we are creating
 			bdesc.CPUAccessFlags = 0; //this is to specify that the buffer can be read/written by the CPU
 			bdesc.MiscFlags = 0; //this is used for an additional options, 0 mean no additional options
-			
-			
 			
 			D3D10_SUBRESOURCE_DATA indexBufferInitialData;
 			indexBufferInitialData.pSysMem = indices;
