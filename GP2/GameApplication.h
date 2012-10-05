@@ -24,12 +24,9 @@ private:
 		IDXGISwapChain * m_pSwapChain; //variable used to render scene
 		ID3D10RenderTargetView * m_pRenderTargetView; //variable used to render scene
 
-		
-		
 		ID3D10DepthStencilView*m_pDepthStencilView;
 		ID3D10Texture2D * m_pDepthStencilTexture;
 
-		ID3D10EffectShaderResourceVariable*m_pDiffuseTextureVariable;
 		ID3D10ShaderResourceView*m_pTextureShaderResource;
 
 		ID3D10EffectMatrixVariable*m_pViewMatrixVariable;
@@ -48,6 +45,9 @@ private:
 		ID3D10EffectTechnique* m_pTechnique; //this is used in the rendering process and will be retieved from the effect varaiable
 
 		ID3D10EffectMatrixVariable* m_pWorldMatrixVariable;
+
+		ID3D10ShaderResourceView* m_pDiffuseTexture;
+		ID3D10EffectShaderResourceVariable* m_pDiffuseTextureVariable;
 
 		D3DXMATRIX m_matWorld;
 		D3DXMATRIX m_matScale;

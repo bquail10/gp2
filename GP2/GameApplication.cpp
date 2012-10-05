@@ -4,6 +4,7 @@ struct Vertex
 {
 	D3DXVECTOR3 Pos;
 	D3DXCOLOR colour;
+	D3DXVECTOR2 texCoords;
 
 };
 
@@ -16,14 +17,18 @@ CGameApplication::CGameApplication(void) //class constructor called for creating
 	m_pVertexBuffer=NULL;
 	m_pIndexBuffer=NULL;
 	m_pDepthStencilView=NULL;
-	m_pDepthStencilTexture=NULL;	
+	m_pDepthStencilTexture=NULL;
+	m_pDiffuseTexture=NULL;
 }
 
 CGameApplication::~CGameApplication(void) //deconstructor deallocate all resources, D3D10 objects we call the release function
 {
 	if(m_pD3D10Device)
 		m_pD3D10Device->ClearState(); 
-	
+
+	if(m_pDiffuseTexture)
+		m_pDiffuseTexture->Release();
+
 	if(m_pVertexBuffer)
 		m_pVertexBuffer->Release();
 
@@ -94,6 +99,8 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 
 			m_pWorldMatrixVariable->SetMatrix((float*)m_matWorld);
 
+			m_pDiffuseTextureVariable->SetResource(m_pDiffuseTexture);
+
 			D3D10_TECHNIQUE_DESC techDesc; //this retrieves a description of the technique
 			m_pTechnique->GetDesc( &techDesc); //this will allow us info about it such as number of passed contained in the technique
 			for(UINT p = 0; p <techDesc.Passes; ++p) //this is a loopthat retrieves the pass we are currently on
@@ -117,6 +124,10 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 
 			D3DXMatrixMultiply(&m_matWorld,&m_matScale,&m_matRotation);
 			D3DXMatrixMultiply(&m_matWorld,&m_matWorld,&m_matTranslation);
+
+			m_vecRotation.x+=0.0001f;
+			//m_vecRotation.y+=0.0001f;
+			//m_vecRotation.z+=0.0001f;
 
 		}
 
@@ -251,7 +262,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 #endif
 
 			if(FAILED(D3DX10CreateEffectFromFile //this function will load the effect file
-				(TEXT("Transform.fx"), //this is the name of the file of the efffect 
+				(TEXT("Texture.fx"), //this is the name of the file of the efffect 
 				NULL,NULL, "fx_4_0", //"fx_4_0" is the shader profile we are using, this is equivalent of shader model 4 
 				dwShaderFlags, 0, //dwShaderFlags this allows us to collect debug info about the shader
 				m_pD3D10Device, //this is a pointer to a valid device which will use this effect 
@@ -265,7 +276,11 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 				return false;
 			}
 
+			m_pDiffuseTextureVariable=m_pEffect->
+				GetVariableByName("diffuseTexture")->AsShaderResource();
+
 			m_pTechnique=m_pEffect->GetTechniqueByName("Render");  //this calls GetTechniqueByName and passes in a string which we are looking for in the effect
+
 
 		
 			D3D10_BUFFER_DESC bd; //this is the buffer description structure
@@ -278,15 +293,14 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			Vertex vertices[] =
 			{
 				
-				{D3DXVECTOR3( 0.0f, 0.0f, 0.0f),D3DXCOLOR(1.0f,0.6f,1.0f,1.0f)}, //position and colour of the first vertice
-				{D3DXVECTOR3( 0.5f, 0.0f, 0.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)}, //position and colour of the second vertice
-				{D3DXVECTOR3( 0.0f, 0.5f, 0.0f),D3DXCOLOR(0.3f,1.0f,0.5f,1.0f)}, //position and colour of the third vertice
-				{D3DXVECTOR3( 0.5f, 0.5f, 0.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)}, //position and colour of the fourth vertice
-				{D3DXVECTOR3( 0.5f, 0.5f, 0.0f),D3DXCOLOR(0.7f,1.0f,1.0f,1.0f)}, //position and colour of the fourth vertice
-				{D3DXVECTOR3( 0.0f, 0.0f, 0.5f),D3DXCOLOR(1.0f,1.0f,0.4f,1.0f)}, //position and colour of the fifth vertice
-				{D3DXVECTOR3( 0.5f, 0.0f, 0.5f),D3DXCOLOR(1.0f,0.6f,1.0f,1.0f)}, //position and colour of the sixth vertice
-				{D3DXVECTOR3( 0.0f, 0.5f, 0.5f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)}, //position and colour of the seventh vertice
-				{D3DXVECTOR3( 0.5f, 0.5f, 0.5f),D3DXCOLOR(1.0f,0.0f,0.0f,1.0f)}, //position and colour of the eighth vertice
+				{D3DXVECTOR3( 0.0f, 0.0f, 0.0f),D3DXCOLOR(1.0f,0.6f,1.0f,1.0f),D3DXVECTOR2(0.0f,1.0f)}, //position and colour of the first vertice=0
+				{D3DXVECTOR3( 0.5f, 0.0f, 0.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f),D3DXVECTOR2(1.0f,1.0f)}, //position and colour of the second vertice=1
+				{D3DXVECTOR3( 0.0f, 0.5f, 0.0f),D3DXCOLOR(0.3f,1.0f,0.5f,1.0f),D3DXVECTOR2(0.0f,0.0f)}, //position and colour of the third vertice=2
+				{D3DXVECTOR3( 0.5f, 0.5f, 0.0f),D3DXCOLOR(0.7f,1.0f,1.0f,1.0f),D3DXVECTOR2(1.0f,0.0f)}, //position and colour of the fourth vertice=3
+				{D3DXVECTOR3( 0.0f, 0.0f, 0.5f),D3DXCOLOR(1.0f,1.0f,0.4f,1.0f),D3DXVECTOR2(0.0f,1.0f)}, //position and colour of the fifth vertice=4
+				{D3DXVECTOR3( 0.5f, 0.0f, 0.5f),D3DXCOLOR(1.0f,0.6f,1.0f,1.0f),D3DXVECTOR2(1.0f,1.0f)}, //position and colour of the sixth vertice=5
+				{D3DXVECTOR3( 0.0f, 0.5f, 0.5f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f),D3DXVECTOR2(0.0f,0.0f)}, //position and colour of the seventh vertice=6
+				{D3DXVECTOR3( 0.5f, 0.5f, 0.5f),D3DXCOLOR(1.0f,0.0f,0.0f,1.0f),D3DXVECTOR2(1.0f,0.0f)}, //position and colour of the eighth vertice=7
 			};
 
 			D3D10_SUBRESOURCE_DATA InitData; //this initailizes D3D10_SUBRESOURCE_DATA structure
@@ -300,7 +314,7 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 				return false;
 			}
 			
-			int indices[] = {0,1,2,0,1,3,3,1,5,5,7,3,0,2,4,4,6,2,0,1,4,4,5,1,2,3,6,6,7,3,6,4,5,6,7,5};
+			int indices[] = {0,1,2,1,2,3,0,1,4,1,4,5,2,3,6,3,6,7,1,3,7,1,5,7,0,2,4,2,4,6,4,5,6,5,6,7};
 
 			D3D10_BUFFER_DESC bdesc; //this is the buffer description structure
 			bdesc.Usage = D3D10_USAGE_DEFAULT; //this is how buffer is read/written to, DEFAULT states that the resoures read/written by the gpu
@@ -339,10 +353,20 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 				{
 						"COLOR", //this is a string which specifies the smantic that this element is bound too
 						0, //this is the index of the semantic, it is used to bind to a vertex
-						DXGI_FORMAT_R32G32B32A32_FLOAT, //This is the format of the data, there are 3 components with 32 bits for each of them
+						DXGI_FORMAT_R32G32B32A32_FLOAT, //This is the format of the data, there are 4 components with 32 bits for each of them
 						0, 
 						12, //this is the starting offset of the element, it will increase for subsequent elements in the array
 						D3D10_INPUT_PER_VERTEX_DATA, 0		
+				},
+
+				{
+						"texCoord", //this is a string which specifies the smantic that this element is bound too
+						0, //this is the index of the semantic, it is used to bind to a vertex
+						DXGI_FORMAT_R32G32_FLOAT, //This is the format of the data, there are 4 components with 32 bits for each of them
+						0,
+						28, //this is the starting offset of the element, it will increase for subsequent elements in the array
+						D3D10_INPUT_PER_VERTEX_DATA,0
+				
 				}
 			};
 
@@ -399,6 +423,18 @@ CGameApplication::~CGameApplication(void) //deconstructor deallocate all resourc
 			m_pWorldMatrixVariable=
 				m_pEffect->GetVariableByName("matWorld")->AsMatrix();
 				
+			if(FAILED(D3DX10CreateShaderResourceViewFromFile(
+				m_pD3D10Device,
+				TEXT("rockwall.jpg"),
+				NULL, NULL,
+				&m_pDiffuseTexture,
+				NULL)))
+			{
+				MessageBox(NULL,TEXT("can't load the texture"),TEXT("ERROR"),MB_OK);
+				return false;
+			}
+
+			
 			return true;
 		}
 
